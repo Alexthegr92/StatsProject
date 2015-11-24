@@ -1,3 +1,4 @@
+source("~/Documents/MAS8381/StatsProjects/StatsProject/packages.R")
 data("marketing")
 
 # change non ordered categorical varibales to factors
