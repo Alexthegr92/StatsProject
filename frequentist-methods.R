@@ -6,6 +6,8 @@ library(ISLR)
 
 names(Hitters)
 dim(Hitters)
+data("Hitters")
+?Hitters
 
 sum(is.na(Hitters$Salary)) #counts the number of missing values
 Hitters=na.omit(Hitters) #removes the missing values
@@ -178,7 +180,7 @@ mean((lasso.pred-y.test)^2)
 
 out=glmnet(x,y,alpha=1,lambda=grid)
 lasso.coef=predict(out,type="coefficients",s=bestlam)[1:20,]
-lasso.coef #shows which are 0
+lasso.coef
 
 lasso.coef[lasso.coef!=0] #want these coeffs in model
 

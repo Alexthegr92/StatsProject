@@ -1,5 +1,7 @@
-source("~/Documents/MAS8381/StatsProjects/StatsProject/packages.R")
+#set working directory to be stats project before sourcing
+source("./packages.R")
 data("marketing")
+?marketing
 
 # change non ordered categorical varibales to factors
 # leave the others but maybe convert to continuous vars after looking at the data plots etc
@@ -8,13 +10,12 @@ data("marketing")
 marketing = na.omit(marketing)
 
 # make factors
-marketingFactors = marketing
-marketingFactors$Sex = factor(marketing$Sex)
-marketingFactors$Marital = factor(marketing$Marital)
-marketingFactors$Occupation = factor(marketing$Occupation)
-marketingFactors$Dual_Income = factor(marketing$Dual_Income)
-marketingFactors$Status = factor(marketing$Status)
-marketingFactors$Home_Type = factor(marketing$Home_Type)
-marketingFactors$Ethnic = factor(marketing$Ethnic)
-marketingFactors$Language = factor(marketing$Language)
+marketing$Sex = factor(marketing$Sex)
+marketing$Marital = factor(marketing$Marital)
+marketing$Occupation = factor(marketing$Occupation)
+marketing$Dual_Income = factor(marketing$Dual_Income)
+marketing$Status = factor(marketing$Status)
+marketing$Home_Type = factor(marketing$Home_Type)
+marketing$Ethnic = factor(marketing$Ethnic)
+marketing$Language = factor(marketing$Language)
 
