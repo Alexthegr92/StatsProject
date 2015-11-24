@@ -1,3 +1,5 @@
+source("~/Documents/MAS8381/StatsProjects/StatsProject/data-tidying.R")
+
 # plotting factors against income
 plot(marketing$Sex, marketing$Income, main="sex")
 plot(marketing$Marital, marketing$Income, main="marital")
@@ -22,7 +24,7 @@ for( i in 1:9) {
 continuousPlots = function(variable, name) {
   for( i in 1:9) {
     hist(variable[marketing$Income==i], main=paste("Histogram of ", name , "for income level ",i),
-         xlab=name, breaks = max(variable) + 2)
+         xlab=name, breaks = max(variable) + 2, xlim = c(1, max(variable)))
   }
 }
 
