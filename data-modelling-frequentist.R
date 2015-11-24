@@ -18,32 +18,40 @@ par(mfrow=c(2,2))
 plot(bestSubsetSummary$rss,xlab="Number of Variables",ylab="RSS",type="l")
 
 plot(bestSubsetSummary$adjr2,xlab="Number of Variables",ylab="Adjusted RSq",type="l")
-which.max(bestSubsetSummary$adjr2)
-points(28,bestSubsetSummary$adjr2[28], col="red",cex=2,pch=20)
+maxAdjr2 = which.max(bestSubsetSummary$adjr2)
+points(maxAdjr2,bestSubsetSummary$adjr2[maxAdjr2], col="red",cex=2,pch=20)
 
 plot(bestSubsetSummary$cp,xlab="Number of Variables",ylab="Cp",type='l')
-which.min(bestSubsetSummary$cp)
-points(28,bestSubsetSummary$cp[28],col="red",cex=2,pch=20)
+mincp = which.min(bestSubsetSummary$cp)
+points(mincp,bestSubsetSummary$cp[mincp],col="red",cex=2,pch=20)
 
 plot(bestSubsetSummary$bic,xlab="Number of Variables",ylab="BIC",type='l')
-which.min(bestSubsetSummary$bic)
-points(21,bestSubsetSummary$bic[11],col="red",cex=2,pch=20)
+minbic = which.min(bestSubsetSummary$bic)
+points(minbic,bestSubsetSummary$bic[minbic],col="red",cex=2,pch=20)
 par(mfrow=c(1,1))
 
-coef(bestSubsetFull,21)
+coef(bestSubsetFull,minbic)
+
+predict.regsubsets=function(object,newdata,id,...){
+  form=as.formula(object$call[[2]])
+  mat=model.matrix(form,newdata)
+  coefi=coef(object,id=id)
+  xvars=names(coefi)
+  mat[,xvars]%*%coefi
+}
 
 #try k fold cv
 k=10
 set.seed(1)
 folds=sample(1:k,nrow(marketing),replace=TRUE)
-cv.errors=matrix(NA,k,19, dimnames=list(NULL, paste(1:19))) #puts errors in a matrix
+cv.errors=matrix(NA,k,noVars, dimnames=list(NULL, paste(1:noVars))) #puts errors in a matrix
 
 #calculates the errors
 for(j in 1:k){
-  best.fit=regsubsets(Salary~.,data=Hitters[folds!=j,],nvmax=19)
-  for(i in 1:19){
-    pred=predict(best.fit,Hitters[folds==j,],id=i)
-    cv.errors[j,i]=mean( (Hitters$Salary[folds==j]-pred)^2)
+  best.fit=regsubsets(Income~.,data=marketing[folds!=j,],nvmax=noVars)
+  for(i in 1:noVars){
+    pred=predict(best.fit,marketing[folds==j,],id=i)
+    cv.errors[j,i]=mean( (marketing$Income[folds==j]-pred)^2)
   }
 }
 
@@ -52,8 +60,9 @@ mean.cv.errors
 
 par(mfrow=c(1,1))
 plot(mean.cv.errors,type='b')
-reg.best=regsubsets(Salary~.,data=Hitters, nvmax=19) #full data set model
-coef(reg.best,11)
+mincverrors = which.min(mean.cv.errors)
+reg.best=regsubsets(Income~.,data=marketing, nvmax=noVars) #full data set model
+coef(reg.best,mincverrors)
 
 # Lasso
 x=model.matrix(Income~.,marketing)[,-1]
