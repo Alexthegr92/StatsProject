@@ -13,6 +13,7 @@ bestSubsetFull = regsubsets(Income~., data=marketing, nvmax=noVars)
 bestSubsetSummary = summary(bestSubsetFull)
 bestSubsetSummary
 
+# look at the best models according to summary stats
 par(mfrow=c(2,2))
 
 plot(bestSubsetSummary$rss,xlab="Number of Variables",ylab="RSS",type="l")
@@ -30,8 +31,12 @@ minbic = which.min(bestSubsetSummary$bic)
 points(minbic,bestSubsetSummary$bic[minbic],col="red",cex=2,pch=20)
 par(mfrow=c(1,1))
 
+# initial coefficicients of best subset
 coef(bestSubsetFull,minbic)
 
+# use cross validation to find the best number of predictors
+
+# create predict function for regsubsets
 predict.regsubsets=function(object,newdata,id,...){
   form=as.formula(object$call[[2]])
   mat=model.matrix(form,newdata)
@@ -40,13 +45,13 @@ predict.regsubsets=function(object,newdata,id,...){
   mat[,xvars]%*%coefi
 }
 
-#try k fold cv
+# k fold cv - k=10
 k=10
 set.seed(1)
 folds=sample(1:k,nrow(marketing),replace=TRUE)
-cv.errors=matrix(NA,k,noVars, dimnames=list(NULL, paste(1:noVars))) #puts errors in a matrix
+cv.errors=matrix(NA,k,noVars, dimnames=list(NULL, paste(1:noVars)))
 
-#calculates the errors
+# calculate the errors associated with each model
 for(j in 1:k){
   best.fit=regsubsets(Income~.,data=marketing[folds!=j,],nvmax=noVars)
   for(i in 1:noVars){
@@ -55,14 +60,15 @@ for(j in 1:k){
   }
 }
 
-mean.cv.errors=apply(cv.errors,2,mean) #calculates the mean error of each column
-mean.cv.errors
+mean.cv.errors=apply(cv.errors,2,mean)
 
-par(mfrow=c(1,1))
 plot(mean.cv.errors,type='b')
 mincverrors = which.min(mean.cv.errors)
-reg.best=regsubsets(Income~.,data=marketing, nvmax=noVars) #full data set model
-coef(reg.best,mincverrors)
+points(mincverrors, mean.cv.errors[mincverrors],col="red",cex=2,pch=20)
+
+# the final model's coefficients
+reg.best=regsubsets(Income~.,data=marketing, nvmax=noVars)
+coef(reg.best, mincverrors)
 
 # Lasso
 x=model.matrix(Income~.,marketing)[,-1]
