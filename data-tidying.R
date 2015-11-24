@@ -7,7 +7,10 @@ data("marketing")
 # leave the others but maybe convert to continuous vars after looking at the data plots etc
 
 # omitted NAs
-marketing = na.omit(marketing)
+#marketing = na.omit(marketing)
+# use Mice to impute
+marketing = mice(data = marketing, m = 1, meth='pmm')
+marketing = complete(marketing,1)
 
 # make factors
 marketing$Sex = factor(marketing$Sex)
@@ -18,4 +21,5 @@ marketing$Status = factor(marketing$Status)
 marketing$Home_Type = factor(marketing$Home_Type)
 marketing$Ethnic = factor(marketing$Ethnic)
 marketing$Language = factor(marketing$Language)
+
 
