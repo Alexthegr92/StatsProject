@@ -31,35 +31,8 @@ output=coda.samples(model=model,variable.names=c("alpha","beta","tau"),
 print(summary(output))
 plot(output)
 
-#basic variable selection - kuo and mallick
-data=list(y=y,X=X,n=n,p=p)
-init=list(tau=1,alpha=0,betaT=rep(0,p),ind=rep(0,p))
-modelstring="
-model {
-for (i in 1:n) {
-mean[i]<-alpha+inprod(X[i,],beta)
-y[i]~dnorm(mean[i],tau)
-}
-for (j in 1:p) {
-ind[j]~dbern(0.2)
-betaT[j]~dnorm(0,0.001)
-beta[j]<-ind[j]*betaT[j]
-}
-alpha~dnorm(0,0.0001)
-tau~dgamma(1,0.001)
-}
-"
-model=jags.model(textConnection(modelstring),
-                 data=data,inits=init)
-update(model,n.iter=1000)
-output=coda.samples(model=model,
-                    variable.names=c("alpha","beta","ind","tau"),
-                    n.iter=10000,thin=1)
-print(summary(output))
-plot(output)
-
 #variable selection with random effects
-data=list(y=y,X=X,n=n,p=p)
+data=list(y=response,X=design,n=n,p=p)
 init=list(tau=1,taub=1,alpha=0,betaT=rep(0,p),ind=rep(0,p))
 modelstring="
 model {
@@ -85,32 +58,4 @@ output=coda.samples(model=model,
                     n.iter=10000,thin=1)
 print(summary(output))
 plot(output)
-
-#variable selection with random effects and a prior on the inclusion probability
-data=list(y=y,X=X,n=n,p=p)
-init=list(tau=1,taub=1,pind=0.5,alpha=0,betaT=rep(0,p),ind=rep(0,p))
-modelstring="
-  model {
-    for (i in 1:n) {
-      mean[i]<-alpha+inprod(X[i,],beta)
-      y[i]~dnorm(mean[i],tau)
-    }
-    for (j in 1:p) {
-      ind[j]~dbern(pind)
-      betaT[j]~dnorm(0,taub)
-      beta[j]<-ind[j]*betaT[j]
-    }
-    alpha~dnorm(0,0.0001)
-    tau~dgamma(1,0.001)
-    taub~dgamma(1,0.001)
-    pind~dbeta(2,8)
-  }
-"
-model=jags.model(textConnection(modelstring),
-                 data=data,inits=init)
-update(model,n.iter=1000)
-output=coda.samples(model=model,
-                    variable.names=c("alpha","beta","ind","tau","taub","pind"),
-                    n.iter=10000,thin=1)
-print(summary(output))
-plot(output)
+autocorr.plot(output)
