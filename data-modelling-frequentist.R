@@ -51,7 +51,7 @@ set.seed(1)
 folds=sample(1:k,nrow(marketing),replace=TRUE)
 cv.errors=matrix(NA,k,noVars, dimnames=list(NULL, paste(1:noVars)))
 
-# calculate the errors associated with each model
+# calculate the errors associated with each variable in each model
 for(j in 1:k){
   best.fit=regsubsets(Income~.,data=marketing[folds!=j,],nvmax=noVars)
   for(i in 1:noVars){
@@ -60,6 +60,7 @@ for(j in 1:k){
   }
 }
 
+#calculate the mean error in each model
 mean.cv.errors=apply(cv.errors,2,mean)
 
 plot(mean.cv.errors,type='b')
@@ -73,23 +74,33 @@ coef(reg.best, mincverrors)
 # Lasso
 x=model.matrix(Income~.,marketing)[,-1]
 y=marketing$Income
+
+#splitting the data into test and training set
 set.seed(1)
 train=sample(1:nrow(x), nrow(x)/2)
 test=(-train)
 y.test=y[test]
+
+#setting up the lasso model with a range of values for lambda
 grid=10^seq(10,-2,length=100)
 lasso.mod=glmnet(x[train,],y[train],alpha=1,lambda=grid)
 plot(lasso.mod)
 
-set.seed(1) #cv for associated test error
+#using cv to find the best value of lambda
+set.seed(1)
 cv.out=cv.glmnet(x[train,],y[train],alpha=1)
 plot(cv.out)
 bestlam=cv.out$lambda.min
+
+#predicting the mean error with this value of lambda
 lasso.pred=predict(lasso.mod,s=bestlam,newx=x[test,])
 mean((lasso.pred-y.test)^2)
 
+#calculating the non-zero coeffs using the best lambda and all the data
 out=glmnet(x,y,alpha=1,lambda=grid)
 lasso.coef=predict(out,type="coefficients",s=bestlam)[1:noVars,]
-lasso.coef
-
 lasso.coef[lasso.coef!=0]
+
+#number of variables to include in the model
+reducedNoVarsLasso = length(lasso.coef[lasso.coef!=0])
+#only reduces the number of variables to include in the data set by 2 - use best subset

@@ -21,5 +21,3 @@ marketing$Status = factor(marketing$Status)
 marketing$Home_Type = factor(marketing$Home_Type)
 marketing$Ethnic = factor(marketing$Ethnic)
 marketing$Language = factor(marketing$Language)
-
-
