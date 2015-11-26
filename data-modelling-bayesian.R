@@ -32,9 +32,7 @@ update(model,n.iter=1000)
 output=coda.samples(model=model,
                     variable.names=c("alpha","beta","ind","tau","taub"),
                     n.iter=10000,thin=1)
-#output2=coda.samples(model=model,
-                    #variable.names=c("alpha","beta","ind","tau","taub"),
-                    #n.iter=20000,thin=1)
 print(summary(output))
 plot(output)
 autocorr.plot(output)
+crosscorr.plot(output)
