@@ -1,6 +1,7 @@
 source("./data-tidying.R")
 
 # plotting factors against income
+par(mfrow=c(2,2))
 plot(marketing$Sex, marketing$Income, xlab="sex", ylab="Income")
 plot(marketing$Marital, marketing$Income, xlab="marital", ylab="Income")
 plot(marketing$Occupation, marketing$Income, xlab="occupation", ylab="Income")
