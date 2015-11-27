@@ -35,3 +35,4 @@ output=coda.samples(model=model,
 print(summary(output))
 plot(output)
 autocorr.plot(output)
+crosscorr.plot(output)
